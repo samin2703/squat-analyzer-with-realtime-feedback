@@ -1,0 +1,8 @@
+Participant: Tahmid Ahmed
+Mode: Personality Adaptive (squatper)
+Total Reps: 8
+Average Score: 0.3087
+Total Issues (excluding last rep): 14
+Total Compliance: 6
+Average Feedback Processing Time: 3.7828 s
+Session End Time: 2026-04-15 15:10:34
