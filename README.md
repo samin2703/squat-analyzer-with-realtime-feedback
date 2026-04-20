@@ -102,9 +102,11 @@ Use the sections below to add visual assets when publishing.
 
 <!-- Add demo video link or embedded preview below -->
 
-Demo video: [Watch demo video](demo-video.MOV)
+Click the thumbnail to play the demo video:
 
 [![Watch demo](demo-1.jpg)](demo-video.MOV)
+
+Direct link: [Watch demo video](demo-video.MOV)
 
 ## Notes
 
