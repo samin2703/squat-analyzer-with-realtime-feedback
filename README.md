@@ -202,7 +202,7 @@ Core runtime settings are in `config/settings.py`.
 <!-- Add demo video link or embedded preview below -->
 
 
-[![Watch demo](demo-1.jpg)](demo-video.MOV)
+[![Watch demo]](demo-video.MOV)
 Click the thumbnail to play the demo video:
 
 Direct link: [Watch demo video](demo-video.MOV)
