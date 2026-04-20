@@ -72,6 +72,106 @@ flet run app_flet.py
 python main.py
 ```
 
+## How To Use
+
+1. Install dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+2. Start the app (Streamlit or Flet).
+3. Choose input source:
+- Webcam for live camera analysis.
+- Upload Video for file-based analysis.
+4. Choose mode:
+- Generic: form feedback only.
+- Personality Adaptive: uses participant Big Five profile for customized coaching tone/cues.
+5. Optionally toggle:
+- Enable LLM (Ollama text feedback)
+- Enable TTS (spoken feedback)
+6. Start analysis. The video and overlays are shown in an OpenCV window.
+7. Perform reps and monitor the live angles, state, score, and suggestions.
+8. Press `q` in the OpenCV window to end the session.
+
+## How It Works
+
+The analyzer uses MediaPipe pose landmarks to track shoulder, hip, knee, and ankle points.
+
+For each frame it computes:
+- Spine angle
+- Knee angle
+- Ankle angle
+
+Knee-angle state transitions are used to detect squat phases:
+- `s1`: Standing
+- `s2`: Transition
+- `s3`: Squat bottom
+
+A full rep is counted when the sequence returns through the expected transition path and comes back to standing.
+
+## Scoring System
+
+Each rep is scored from three condition components in the range 0-1:
+- Spine condition
+- Knee condition
+- Ankle condition
+
+Final weighted score:
+
+$$
+	ext{score} = 0.45 \cdot \text{spine} + 0.35 \cdot \text{knee} + 0.20 \cdot \text{ankle}
+$$
+
+Issue detection rules currently include:
+- Bend forward
+- Bend backward
+- Shallow squat
+- Deep squat
+- Knee crossing toe
+
+Score color on display:
+- Green: score >= 0.80
+- Yellow: 0.50 <= score < 0.80
+- Red: score < 0.50
+
+The app also tracks compliance between consecutive reps by checking whether previous deviations decreased in the next rep.
+
+## Feedback On Display
+
+Feedback is shown in the OpenCV output window (not embedded directly in Streamlit/Flet video).
+
+During analysis, overlays include:
+- Live SPINE, KNEE, ANKLE angles
+- Current rep count
+- Current movement state (STANDING / TRANSITION / SQUAT)
+- Suggestions panel after rep completion
+- Rep score with color coding
+
+Suggestions are shown primarily when the user returns to standing (`s1`), making cues visible between reps.
+
+## Personality-Adaptive LLM + Spoken Feedback
+
+When `Enable LLM` is on:
+- Rep summaries are sent to an async worker queue.
+- First LLM call happens after the first completed rep.
+- Later calls are throttled by `LLM_INTERVAL_SECONDS` using the latest rep data.
+- LLM returns short coaching cues.
+
+When mode is `Personality Adaptive`:
+- The prompt includes Big Five traits along with form metrics.
+- Profiles are loaded from `res_out.csv` using `*_scaled` columns.
+- Traits are mapped to 0-10 internally for display/config, then normalized in prompt context.
+
+When `Enable TTS` is on:
+- The latest LLM feedback is spoken asynchronously via `pyttsx3`.
+- Speech is triggered when the user is standing, so spoken cues are delivered between reps.
+
+## Session Output
+
+- Console prints final session summary (reps, issues, compliance, average score, feedback timing).
+- In personality-adaptive mode, a participant summary file is saved in `records/`.
+
 ## Configuration
 
 Core runtime settings are in `config/settings.py`.
@@ -82,7 +182,6 @@ Core runtime settings are in `config/settings.py`.
 
 ## Media Placeholders
 
-Use the sections below to add visual assets when publishing.
 
 ### Interface Images
 
@@ -102,9 +201,9 @@ Use the sections below to add visual assets when publishing.
 
 <!-- Add demo video link or embedded preview below -->
 
-Click the thumbnail to play the demo video:
 
 [![Watch demo](demo-1.jpg)](demo-video.MOV)
+Click the thumbnail to play the demo video:
 
 Direct link: [Watch demo video](demo-video.MOV)
 
